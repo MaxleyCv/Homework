@@ -109,3 +109,5 @@ int main() {
     std::cout << "F(f[i]): \n" << sum/5 << std::endl;
     return 0;
 }
+
+

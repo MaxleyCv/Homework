@@ -79,6 +79,8 @@ void PrintArr(Vector* A, int n){
 }
 
 
+
+
 int main() {
     Vector A[5];
     for (int i = 0; i<5; i++)

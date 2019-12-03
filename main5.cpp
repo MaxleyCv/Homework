@@ -3,77 +3,80 @@
 
 class Vector{
 private:
-    int A[5];
+    int containedArray[5];
 public:
-    void setVectorel(int a){
-        static int ptr = 0;
-           this -> A[ptr] = a;
-           if (ptr == 4) ptr = -1;
-           ptr++;
+    void setNextVectorElement(int element){    //A method implements setting the next or the first element of the array
+        static int position = 0;
+        this -> containedArray[position] = element;
+        if (position == 4) position = -1;
+        position++;
     }
-    int mul(){
-        int s = 1;
+
+    int multiplyAllElements(){
+        int result = 1;
         for (int i = 0; i< 5; i++){
-            s *= A[i];
+            result *= containedArray[i];
         }
-        return s;
+        return result;
     }
-    int* get_arr(){
-        return A;
+
+    int* getContainedArray(){
+        return containedArray;
     }
-    void SetArrEl(int c){
+    void setArrayElementAtPosition(int position){
 
-            std::cin >> this -> A[c];
+        std::cin >> this -> containedArray[position];
 
     }
-    friend void PrintArr(Vector* A, int n);
-    void merge(int start, int mid, int end) {
-        int temp[5];
-        int i = start, j = mid+1, k = 0;
+    friend void printArray(Vector* array, int numberOfElements);
 
-        while(i <= mid && j <= end) {
-            if(this -> A[i] <= this -> A[j]) {
-                temp[k] = this -> A[i];
-                k += 1; i += 1;
+    void merge(int startFlag, int middlePosition, int endFlag) {
+        int currentArray[5];
+        int leftPosition = startFlag, rightPosition = middlePosition + 1, iteration = 0;
+
+        while(leftPosition <= middlePosition && rightPosition <= endFlag) {
+            if(this -> containedArray[leftPosition] <= this -> containedArray[rightPosition]) {
+                currentArray[iteration] = this -> containedArray[leftPosition];
+                iteration += 1; leftPosition += 1;
             }
             else {
-                temp[k] = this -> A[j];
-                k += 1; j += 1;
+                currentArray[iteration] = this -> containedArray[rightPosition];
+                iteration += 1; rightPosition += 1;
             }
         }
 
-        while(i <= mid) {
-            temp[k] = this -> A[i];
-            k += 1; i += 1;
+        while(leftPosition <= middlePosition) {
+            currentArray[iteration] = this -> containedArray[leftPosition];
+            iteration += 1; leftPosition += 1;
         }
 
-        while(j <= end) {
-            temp[k] = this -> A[j];
-            k += 1; j += 1;
+        while(rightPosition <= endFlag) {
+            currentArray[iteration] = this -> containedArray[rightPosition];
+            iteration += 1; rightPosition += 1;
         }
 
         // copy temp to original interval
-        for(i = start; i <= end; i += 1) {
-            this -> A[i] = temp[i - start];
+        for(leftPosition = startFlag; leftPosition <= endFlag; leftPosition += 1) {
+            this -> containedArray[leftPosition] = currentArray[leftPosition - startFlag];
         }
     }
 
-    void mergeSort(int start, int end) {
+    void mergeSort(int startPosition, int endPosition) {
 
-        if(start < end) {
-            int mid = (start + end) / 2;
-            mergeSort(start, mid);
-            mergeSort( mid+1, end);
-            merge(start, mid, end);
+        if(startPosition < endPosition) {
+            int middleFlag = (startPosition + endPosition) / 2;
+            mergeSort(startPosition, middleFlag);
+            mergeSort(middleFlag + 1, endPosition);
+            merge(startPosition, middleFlag, endPosition);
         }
 
     }
 };
 
-void PrintArr(Vector* A, int n){
-    for(int i = 0; i<n; ++i)
+void printArray(Vector* array, int numberOfElements){
+    for(int position = 0; position < numberOfElements; ++position)
     {
-        std::cout << A -> A[i];
+        std::cout << array -> containedArray[position];
     }
     std::cout << std::endl;
 }
@@ -82,31 +85,31 @@ void PrintArr(Vector* A, int n){
 
 
 int main() {
-    Vector A[5];
-    for (int i = 0; i<5; i++)
-    for (int j = 0; j<5;j++){
-        A[j].SetArrEl(i);
-    }
-    Vector R;
-    Vector Fs;
-    for (int i = 0; i<5; i++)
-        A[i].mergeSort(0, 4);
-    for (int i = 0; i<5; i++){
-        for (int j = 0; j<5; j++) {
-            std::cout << A[j].get_arr()[i] << "\t ";
-            R.setVectorel(A[j].get_arr()[i]);
+    Vector matrixRows[5];
+    for (int rowNumber = 0; rowNumber < 5; rowNumber++)
+        for (int columnNumber = 0; columnNumber < 5; columnNumber++){
+            matrixRows[columnNumber].setArrayElementAtPosition(rowNumber);
         }
-        Fs.setVectorel(R.mul());
+    Vector matrixColumns;
+    Vector functionResultsOfMultipliedElements;
+    for (int rowNumber = 0; rowNumber < 5; rowNumber++)
+        matrixRows[rowNumber].mergeSort(0, 4);
+    for (int columnNumber = 0; columnNumber < 5; columnNumber++){
+        for (int rowNumber = 0; rowNumber < 5; rowNumber++) {
+            std::cout << matrixRows[rowNumber].getContainedArray()[columnNumber] << "\t ";
+            matrixColumns.setNextVectorElement(matrixRows[rowNumber].getContainedArray()[columnNumber]);
+        }
+        functionResultsOfMultipliedElements.setNextVectorElement(matrixColumns.multiplyAllElements());
         std::cout << std::endl;
     }
     std::cout << "f[i]" << std::endl;
-    double sum = 0;
-    for (int i = 0; i< 5; i++) {
-        sum += pow(abs(Fs.get_arr()[i]), 0.2);
-        std::cout << pow(abs(Fs.get_arr()[i]), 0.2) << " ";
+    double summOfTheFunctionResults = 0;
+    for (int rowNumber = 0; rowNumber < 5; rowNumber++) {
+        summOfTheFunctionResults += pow(abs(functionResultsOfMultipliedElements.getContainedArray()[rowNumber]), 0.2);
+        std::cout << pow(abs(functionResultsOfMultipliedElements.getContainedArray()[rowNumber]), 0.2) << " ";
     }
     std::cout << std::endl;
-    std::cout << "F(f[i]): \n" << sum/5 << std::endl;
+    std::cout << "F(f[i]): \n" << summOfTheFunctionResults / 5 << std::endl;
     return 0;
 }
 
